@@ -8,6 +8,8 @@ jobs:
   build:
     name: Build artifacts (no secrets required)
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --openssl-legacy-provider
     steps:
       - name: Checkout
         uses: actions/checkout@v4
