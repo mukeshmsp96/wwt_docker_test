@@ -1,0 +1,51 @@
+name: CI (minimal, pseudocode)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build artifacts (no secrets required)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust (stable)
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build API (Rust)
+        run: |
+          cd api
+          cargo build --release
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build frontend (React)
+        run: |
+          cd app
+          npm ci
+          npm run build
+
+      - name: Build Docker images locally
+        run: |
+          docker build -t local-api:latest ./api || true
+          docker build -t local-app:latest ./app || true
+
+# PSEUDOCODE for a full CI/CD pipeline (kept here as reference):
+#
+# GitHub Actions pseudocode:
+#   - checkout
+#   - set up docker buildx
+#   - login to registry (if secrets present)
+#   - build images: docker build -t registry/api:${GIT_SHA} ./api
+#   - docker push registry/api:${GIT_SHA}
+#   - build + push app image
+#   - deploy step : update k8s manifests or use `kubectl set image` and wait for rollout
+#
