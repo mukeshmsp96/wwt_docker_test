@@ -20,11 +20,35 @@ At minimum, you will need to:
 * host a Redis database for the API to communicate with
 * host the frontend application and have it communicate with the API
 
-You are free to choose whichever AWS products/services you believe will best
-help you achieve the goal. We expect you to implement a solution using well-
-known infrastructure as code tools, though which of those tools you use is
-entirely up to you.
 
-When you are finished with the exercise, please submit the configuration for
-your solution and any documentation we might need in order to apply that
-configuration.
+---
+## Quick start (local using Docker Compose)
+
+Requirements: `docker` and `docker compose` installed.
+
+1. From the repository root, build and run:
+
+## Build & push images (example)
+
+Build locally and push to a registry (Docker Hub example):
+
+```bash
+docker build -t <your-user>/api:latest ./api
+docker build -t <your-user>/app:latest ./app
+docker login
+docker push <your-user>/api:latest
+docker push <your-user>/app:latest
+```
+
+For AWS ECR, create repositories and use `aws ecr get-login-password` to authenticate, then tag & push.
+
+---
+## CI / CD (summary)
+
+- A provided GitHub Actions workflow builds images and pushes them to Docker Hub using short-lived tags (git SHA).
+- Deployment to Kubernetes can be performed by updating image tags in manifests or using `kubectl set image` and `kubectl rollout status`.
+
+See `DEPLOYMENT.md` for the full CI pseudocode (GitHub Actions and Jenkins) and deployment recommendations.
+
+---
+If you want, run a local `docker compose build` to validate the images.
